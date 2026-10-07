@@ -55,3 +55,64 @@ output "dynamodb_table_name" {
   value       = aws_dynamodb_table.terraform_locks.name
   description = "The name of the DynamoDB table for state locking"
 }
+
+
+# --- COMPUTE & NETWORKING ---
+
+# 1. Dynamically fetch the latest Ubuntu 22.04 AMI
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical's official AWS account ID
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+}
+
+# 2. Security Group (Firewall) to allow SSH and HTTP traffic
+resource "aws_security_group" "web_sg" {
+  name        = "sre-web-sg"
+  description = "Allow SSH and HTTP inbound traffic"
+
+  ingress {
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# 3. The actual Linux Server (Free Tier Eligible)
+resource "aws_instance" "app_server" {
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = "t3.micro" 
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
+
+  tags = {
+    Name = "SRE-App-Server-1"
+  }
+}
+
+# 4. Output the Public IP so we can access it
+output "instance_public_ip" {
+  value       = aws_instance.app_server.public_ip
+  description = "The public IP address of the web server"
+}
