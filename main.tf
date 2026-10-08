@@ -106,6 +106,17 @@ resource "aws_instance" "app_server" {
   instance_type          = "t3.micro" 
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
+  user_data = <<-EOF
+              #!/bin/bash
+              apt-get update -y
+              apt-get install -y nginx
+              systemctl start nginx
+              systemctl enable nginx
+              echo "<h1>SRE Portfolio Project - Deployed via Terraform</h1><p>Server IP: $(hostname -I)</p>" > /var/www/html/index.html
+              EOF
+
+  user_data_replace_on_change = true
+
   tags = {
     Name = "SRE-App-Server-1"
   }
