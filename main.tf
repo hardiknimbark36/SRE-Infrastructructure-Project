@@ -12,7 +12,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-south-1"
+  region = var.aws_region
 }
 
 # Generates a random suffix to ensure your S3 bucket name is globally unique
@@ -46,16 +46,6 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 }
 
-output "s3_bucket_name" {
-  value       = aws_s3_bucket.terraform_state.id
-  description = "The name of the S3 bucket for remote state"
-}
-
-output "dynamodb_table_name" {
-  value       = aws_dynamodb_table.terraform_locks.name
-  description = "The name of the DynamoDB table for state locking"
-}
-
 
 # --- COMPUTE & NETWORKING ---
 
@@ -74,13 +64,14 @@ data "aws_ami" "ubuntu" {
 resource "aws_security_group" "web_sg" {
   name        = "sre-web-sg"
   description = "Allow SSH and HTTP inbound traffic"
+  vpc_id      = aws_vpc.main.id 
 
   ingress {
     description = "SSH from anywhere"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.allowed_cidr_blocks
   }
 
   ingress {
@@ -88,7 +79,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.allowed_cidr_blocks
   }
 
   egress {
@@ -100,12 +91,19 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
+
+
+
+
+
+/* This part is to be deleted Because the Auto Scaling Group is now handling our compute resources, we need to remove the standalone server from your core configuration.
 # 3. The actual Linux Server (Free Tier Eligible)
 resource "aws_instance" "app_server" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.micro" 
+  instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.web_sg.id]
-
+  subnet_id              = aws_subnet.public.id
+  
   user_data = <<-EOF
               #!/bin/bash
               apt-get update -y
@@ -121,9 +119,4 @@ resource "aws_instance" "app_server" {
     Name = "SRE-App-Server-1"
   }
 }
-
-# 4. Output the Public IP so we can access it
-output "instance_public_ip" {
-  value       = aws_instance.app_server.public_ip
-  description = "The public IP address of the web server"
-}
+*/
