@@ -1,4 +1,12 @@
 terraform {
+  # ADDED THIS BACKEND BLOCK LATER, IT MOVES THE TERRAFORM STATE FILE OUT OF CODESPACES INTO S3 BUCKET I CREATED 
+  backend "s3" {
+    bucket         = "sre-tf-state-aeda26ff"
+    key            = "sre-project/terraform.tfstate"
+    region         = "ap-south-1"
+    use_lockfile   = true
+    encrypt        = true
+  }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
