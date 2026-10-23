@@ -31,7 +31,7 @@ resource "aws_autoscaling_group" "app_asg" {
     version = aws_launch_template.app_lt.latest_version # UPDATED THIS LINE
   }
   
-  # ADD THIS BLOCK to automate rolling updates
+  # ADDED THIS BLOCK to automate rolling updates
   instance_refresh {
     strategy = "Rolling"
     preferences {

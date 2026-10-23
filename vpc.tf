@@ -46,7 +46,6 @@ resource "aws_route_table_association" "public" {
 }
 
 
-# appended the second subnet and its route table association(as part of phase 3)
 resource "aws_subnet" "public_2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnet_2_cidr
