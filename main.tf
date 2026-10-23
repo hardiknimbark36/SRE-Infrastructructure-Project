@@ -1,6 +1,4 @@
 terraform {
-  # ADDED THIS BACKEND BLOCK LATER, IT MOVES THE TERRAFORM STATE FILE OUT OF CODESPACES INTO S3 BUCKET I CREATED 
-  /* This part we will delete later so the terraform stops looking for the deletd bucket
    backend "s3" {
     bucket         = "sre-tf-state-aeda26ff"
     key            = "sre-project/terraform.tfstate"
@@ -8,8 +6,7 @@ terraform {
     use_lockfile   = true
     encrypt        = true
   }
-  */ 
-  
+   
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -103,33 +100,3 @@ resource "aws_security_group" "web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-
-
-
-
-
-/* This part is to be deleted Because the Auto Scaling Group is now handling our compute resources, we need to remove the standalone server from your core configuration.
-# 3. The actual Linux Server (Free Tier Eligible)
-resource "aws_instance" "app_server" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.instance_type
-  vpc_security_group_ids = [aws_security_group.web_sg.id]
-  subnet_id              = aws_subnet.public.id
-  
-  user_data = <<-EOF
-              #!/bin/bash
-              apt-get update -y
-              apt-get install -y nginx
-              systemctl start nginx
-              systemctl enable nginx
-              echo "<h1>SRE Portfolio Project - Deployed via Terraform</h1><p>Server IP: $(hostname -I)</p>" > /var/www/html/index.html
-              EOF
-
-  user_data_replace_on_change = true
-
-  tags = {
-    Name = "SRE-App-Server-1"
-  }
-}
-*/
