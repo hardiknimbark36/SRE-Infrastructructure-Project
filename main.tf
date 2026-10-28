@@ -57,7 +57,7 @@ resource "aws_dynamodb_table" "terraform_locks" {
 }
 
 
-# --- COMPUTE & NETWORKING ---
+# COMPUTE & NETWORKING
 
 # 1. Dynamically fetch the latest Ubuntu 22.04 AMI
 data "aws_ami" "ubuntu" {

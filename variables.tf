@@ -28,7 +28,7 @@ variable "public_subnet_cidr" {
   default     = "10.0.1.0/24"
 }
 
-#Added another subnet as part of phase 3(High Availability & Load Balancing)
+
 variable "public_subnet_2_cidr" {
   description = "CIDR block for the second public subnet"
   type        = string
