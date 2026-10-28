@@ -1,4 +1,16 @@
 terraform {
+  # Note: Remote S3 backend configured for production, but disabled for portfolio showcase to avoid active AWS charges.
+  # backend "s3" {
+  #   bucket       = "sre-tf-state-aeda26ff"
+  #   key          = "sre-project/terraform.tfstate"
+  #   region       = "ap-south-1"
+  #   use_lockfile = true
+  #   encrypt      = true
+  # }
+
+  required_providers {
+
+terraform {
    backend "s3" {
     bucket         = "sre-tf-state-aeda26ff"
     key            = "sre-project/terraform.tfstate"
