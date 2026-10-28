@@ -7,18 +7,7 @@ terraform {
   #   use_lockfile = true
   #   encrypt      = true
   # }
-
-  required_providers {
-
-terraform {
-   backend "s3" {
-    bucket         = "sre-tf-state-aeda26ff"
-    key            = "sre-project/terraform.tfstate"
-    region         = "ap-south-1"
-    use_lockfile   = true
-    encrypt        = true
-  }
-   
+  
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -30,8 +19,6 @@ terraform {
     }
   }
 }
-
-
 
 provider "aws" {
   region = var.aws_region
@@ -67,7 +54,6 @@ resource "aws_dynamodb_table" "terraform_locks" {
     type = "S"  
   }
 }
-
 
 # COMPUTE & NETWORKING
 
